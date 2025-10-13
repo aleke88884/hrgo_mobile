@@ -56,12 +56,13 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Spacer(),
+                Image.asset('assets/logo_oil.png'),
+                const SizedBox(height: 20),
                 Text(
                   "Вход в систему",
 
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -136,7 +137,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Colors.white,
                             strokeWidth: 2,
                           )
-                        : const Text('Войти', style: TextStyle(fontSize: 18)),
+                        : const Text(
+                            'Войти',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
                   ),
                 ),
                 const Spacer(),

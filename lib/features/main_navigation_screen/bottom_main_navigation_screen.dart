@@ -3,6 +3,7 @@ import 'package:hrgo_app/features/business_trip/business_trip_screen.dart';
 import 'package:hrgo_app/features/documents/documents_screen.dart';
 import 'package:hrgo_app/features/leave/leave_screen.dart';
 import 'package:hrgo_app/features/profile/profile_screen.dart';
+import 'package:hrgo_app/features/sick_leave/sick_leave_screen.dart';
 
 class BottomMainNavigationScreen extends StatefulWidget {
   const BottomMainNavigationScreen({super.key});
@@ -21,7 +22,7 @@ class _BottomMainNavigationScreenState
     DocumentsScreen(),
     LeaveScreen(),
     BusinessTripScreen(),
-    LeaveScreen(),
+    SickLeaveScreen(),
   ];
 
   void _onBottomNavTap(int index) {
