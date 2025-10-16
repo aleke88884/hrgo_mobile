@@ -26,6 +26,7 @@
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
@@ -45,5 +46,17 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Приложению нужен доступ к вашим фотографиям, чтобы вы могли выбирать изображения из галереи.</string>
+
+	<key>NSCameraUsageDescription</key>
+	<string>Приложению нужен доступ к камере, чтобы делать фотографии и сканировать документы.</string>
+
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Приложению нужен доступ к микрофону для записи звука.</string>
+
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Приложению нужен доступ, чтобы сохранять изображения в галерею.</string>
+
 </dict>
 </plist>
