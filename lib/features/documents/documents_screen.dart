@@ -27,10 +27,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF3D3D7E)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back, color: Color(0xFF3D3D7E)),
+        //   onPressed: () => Navigator.of(context).pop(),
+        // ),
         title: const Text(
           'Documents',
           style: TextStyle(

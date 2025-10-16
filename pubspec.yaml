@@ -21,4 +21,5 @@ flutter:
   assets:
     - assets/
     - assets/logo_oil.png
+    - assets/profile.jpg
 

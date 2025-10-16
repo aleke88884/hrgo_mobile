@@ -36,6 +36,7 @@ class _BottomMainNavigationScreenState
     return Scaffold(
       body: _screens[_selectedIndex],
       bottomNavigationBar: Container(
+        padding: const EdgeInsets.only(top: 8),
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
@@ -53,29 +54,31 @@ class _BottomMainNavigationScreenState
           backgroundColor: Colors.white,
           selectedItemColor: const Color(0xFF3D3D7E),
           unselectedItemColor: const Color(0xFF9E9E9E),
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
+          selectedFontSize: 12,
+          unselectedFontSize: 10,
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
           elevation: 0,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
-              label: 'Profile',
+              label: 'Профиль',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.description_outlined),
-              label: 'Documents',
+              label: 'Документы',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.calendar_today_outlined),
-              label: 'Leave',
+              label: 'Отпуск',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.chat_bubble_outline),
-              label: 'Trips',
+              label: 'Команд-ки',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.share_outlined),
-              label: 'Sick leave',
+              label: 'Больничный',
             ),
           ],
         ),

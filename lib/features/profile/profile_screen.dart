@@ -57,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 child: ClipOval(
                   child: Image.asset(
-                    'assets/profile_avatar.png', // Replace with your image
+                    'assets/profile.jpg',
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return const Icon(

@@ -66,10 +66,10 @@ class _SickLeaveScreenState extends State<SickLeaveScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF3F3D56)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back, color: Color(0xFF3F3D56)),
+        //   onPressed: () => Navigator.of(context).pop(),
+        // ),
         title: const Text(
           'Sick Leave',
           style: TextStyle(
