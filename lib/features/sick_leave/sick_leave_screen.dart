@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 
 class SickLeaveScreen extends StatefulWidget {
-  const SickLeaveScreen({Key? key}) : super(key: key);
+  const SickLeaveScreen({super.key});
 
   @override
   State<SickLeaveScreen> createState() => _SickLeaveScreenState();
@@ -11,7 +12,8 @@ class SickLeaveScreen extends StatefulWidget {
 class _SickLeaveScreenState extends State<SickLeaveScreen> {
   final TextEditingController _commentController = TextEditingController();
   File? _attachedFile;
-  String _status = 'Under review';
+  String? _fileName;
+  String _status = 'На рассмотрении';
 
   @override
   void dispose() {
@@ -20,42 +22,72 @@ class _SickLeaveScreenState extends State<SickLeaveScreen> {
   }
 
   Future<void> _attachFile() async {
-    // Implement file picker logic here
-    // For now, just show a snackbar
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+        allowMultiple: false,
+      );
+
+      if (result != null && result.files.single.path != null) {
+        setState(() {
+          _attachedFile = File(result.files.single.path!);
+          _fileName = result.files.single.name;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Файл "${result.files.single.name}" прикреплен'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Ошибка при выборе файла: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  void _removeFile() {
+    setState(() {
+      _attachedFile = null;
+      _fileName = null;
+    });
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Opening file picker...'),
+        content: Text('Файл удален'),
         duration: Duration(seconds: 2),
       ),
     );
-
-    // Simulate file attachment
-    setState(() {
-      // _attachedFile would be set here in real implementation
-    });
   }
 
   void _sendSickLeave() {
-    if (_commentController.text.isEmpty && _attachedFile == null) {
+    if (_attachedFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please attach a sick leave certificate'),
+          content: Text('Пожалуйста, прикрепите больничный лист'),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
 
-    // Handle send action
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Sick leave request submitted successfully'),
+        content: Text('Заявка на больничный успешно отправлена'),
         backgroundColor: Colors.green,
       ),
     );
 
     setState(() {
-      _status = 'Submitted';
+      _status = 'Отправлено';
     });
   }
 
@@ -66,12 +98,8 @@ class _SickLeaveScreenState extends State<SickLeaveScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        // leading: IconButton(
-        //   icon: const Icon(Icons.arrow_back, color: Color(0xFF3F3D56)),
-        //   onPressed: () => Navigator.of(context).pop(),
-        // ),
         title: const Text(
-          'Sick Leave',
+          'Больничный лист',
           style: TextStyle(
             color: Color(0xFF3F3D56),
             fontSize: 22,
@@ -89,34 +117,26 @@ class _SickLeaveScreenState extends State<SickLeaveScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Instruction Text
                     Text(
-                      'Attach photo or scan of the sick leave certificate.',
+                      'Прикрепите PDF файл больничного листа.',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey.shade600,
                         height: 1.5,
                       ),
                     ),
-
                     const SizedBox(height: 24),
-
-                    // Attach File Button
-                    _buildAttachFileButton(),
-
+                    _attachedFile == null
+                        ? _buildAttachFileButton()
+                        : _buildAttachedFileCard(),
                     const SizedBox(height: 24),
-
-                    // Comment Text Area
                     _buildCommentField(),
-
                     const SizedBox(height: 24),
                   ],
                 ),
               ),
             ),
           ),
-
-          // Bottom Section with Status and Send Button
           _buildBottomSection(),
         ],
       ),
@@ -136,16 +156,14 @@ class _SickLeaveScreenState extends State<SickLeaveScreen> {
             width: 2,
             style: BorderStyle.solid,
           ),
-          // Dashed border effect using custom painter would be more complex
-          // Using solid border as approximation
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
-            Icon(Icons.attach_file, color: Color(0xFF3F3D56), size: 28),
+            Icon(Icons.picture_as_pdf, color: Color(0xFF3F3D56), size: 28),
             SizedBox(width: 12),
             Text(
-              'Attach File',
+              'Прикрепить PDF файл',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -154,6 +172,61 @@ class _SickLeaveScreenState extends State<SickLeaveScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildAttachedFileCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.green, width: 2),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.red.shade50,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              Icons.picture_as_pdf,
+              color: Colors.red.shade700,
+              size: 32,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _fileName ?? 'Файл прикреплен',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF3F3D56),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'PDF документ',
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: _removeFile,
+            icon: const Icon(Icons.close, color: Colors.red),
+            tooltip: 'Удалить файл',
+          ),
+        ],
       ),
     );
   }
@@ -173,8 +246,8 @@ class _SickLeaveScreenState extends State<SickLeaveScreen> {
         textAlignVertical: TextAlignVertical.top,
         style: const TextStyle(fontSize: 16),
         decoration: InputDecoration(
-          hintText: 'Add a comment (optional)',
-          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 16),
+          hintText: 'Добавьте комментарий (необязательно)',
+          hintStyle: TextStyle(color: Colors.grey, fontSize: 16),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.all(16),
         ),
@@ -200,12 +273,11 @@ class _SickLeaveScreenState extends State<SickLeaveScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Status
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Status: ',
+                    'Статус: ',
                     style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
                   ),
                   Text(
@@ -218,10 +290,7 @@ class _SickLeaveScreenState extends State<SickLeaveScreen> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 16),
-
-              // Send Button
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -235,8 +304,12 @@ class _SickLeaveScreenState extends State<SickLeaveScreen> {
                     elevation: 0,
                   ),
                   child: const Text(
-                    'Send',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    'Отправить',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -246,61 +319,4 @@ class _SickLeaveScreenState extends State<SickLeaveScreen> {
       ),
     );
   }
-}
-
-// Custom painter for dashed border (optional enhancement)
-class DashedBorderPainter extends CustomPainter {
-  final Color color;
-  final double strokeWidth;
-  final double dashWidth;
-  final double dashSpace;
-
-  DashedBorderPainter({
-    this.color = const Color(0xFF3F3D56),
-    this.strokeWidth = 2.0,
-    this.dashWidth = 8.0,
-    this.dashSpace = 4.0,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke;
-
-    final path = Path()
-      ..addRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(0, 0, size.width, size.height),
-          const Radius.circular(12),
-        ),
-      );
-
-    _drawDashedPath(canvas, path, paint);
-  }
-
-  void _drawDashedPath(Canvas canvas, Path path, Paint paint) {
-    final dashPath = Path();
-    double distance = 0.0;
-
-    for (final metric in path.computeMetrics()) {
-      while (distance < metric.length) {
-        final start = metric.getTangentForOffset(distance);
-        final end = metric.getTangentForOffset(distance + dashWidth);
-
-        if (start != null && end != null) {
-          dashPath.moveTo(start.position.dx, start.position.dy);
-          dashPath.lineTo(end.position.dx, end.position.dy);
-        }
-
-        distance += dashWidth + dashSpace;
-      }
-    }
-
-    canvas.drawPath(dashPath, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

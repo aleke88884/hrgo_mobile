@@ -111,7 +111,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                           ),
                         ),
                         child: const Text(
-                          'Decline',
+                          'Отклонить',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -138,7 +138,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                           elevation: 0,
                         ),
                         child: const Text(
-                          'Sign',
+                          'Подписать',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

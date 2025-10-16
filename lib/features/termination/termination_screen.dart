@@ -12,17 +12,17 @@ class _TerminationScreenState extends State<TerminationScreen> {
   bool isProcessCompleted = true;
 
   Future<void> _handleFaceIdSignature() async {
-    // Implement Face ID signature logic here
+    // Здесь реализуется логика подписи через Face ID
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Face ID signature initiated')),
+      const SnackBar(content: Text('Инициализация подписи через Face ID')),
     );
   }
 
   Future<void> _openDocument(String fileName) async {
-    // Implement document opening logic here
+    // Здесь реализуется логика открытия документа
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text('Opening $fileName')));
+    ).showSnackBar(SnackBar(content: Text('Открытие документа: $fileName')));
   }
 
   @override
@@ -37,7 +37,7 @@ class _TerminationScreenState extends State<TerminationScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text(
-          'Termination',
+          'Увольнение',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20,
@@ -54,33 +54,33 @@ class _TerminationScreenState extends State<TerminationScreen> {
             children: [
               const SizedBox(height: 16),
 
-              // Termination Order Section
+              // Раздел: Приказ об увольнении
               const Text(
-                'Termination Order (PDF)',
+                'Приказ об увольнении (PDF)',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               _buildDocumentCard(
-                'Termination_Order_John_Doe.pdf',
-                onTap: () => _openDocument('Termination_Order_John_Doe.pdf'),
+                'Приказ_об_увольнении_Иванов.pdf',
+                onTap: () => _openDocument('Приказ_об_увольнении_Иванов.pdf'),
               ),
 
               const SizedBox(height: 32),
 
-              // Clearance Sheet Section
+              // Раздел: Обходной лист
               const Text(
-                'Clearance Sheet (PDF)',
+                'Обходной лист (PDF)',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               _buildDocumentCard(
-                'Clearance_Sheet_John_Doe.pdf',
-                onTap: () => _openDocument('Clearance_Sheet_John_Doe.pdf'),
+                'Обходной_лист_Иванов.pdf',
+                onTap: () => _openDocument('Обходной_лист_Иванов.pdf'),
               ),
 
               const SizedBox(height: 32),
 
-              // Sign with Face ID Button
+              // Кнопка: Подписать через Face ID
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -99,7 +99,7 @@ class _TerminationScreenState extends State<TerminationScreen> {
                       Icon(Icons.fingerprint, size: 24),
                       SizedBox(width: 8),
                       Text(
-                        '[Sign with Face ID]',
+                        'Подписать через Face ID',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -112,12 +112,12 @@ class _TerminationScreenState extends State<TerminationScreen> {
 
               const SizedBox(height: 24),
 
-              // Status Section
+              // Статус процесса
               Center(
                 child: Column(
                   children: [
                     Text(
-                      'Employee signature completed',
+                      'Подпись сотрудника завершена',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -128,12 +128,12 @@ class _TerminationScreenState extends State<TerminationScreen> {
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      'Employer signature available via ERP web client',
+                      'Подпись работодателя доступна в ERP Web Client',
                       style: TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Process completed',
+                      'Процесс завершён',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -198,11 +198,11 @@ class _TerminationScreenState extends State<TerminationScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(Icons.person_outline, 'Profile', false),
-              _buildNavItem(Icons.description_outlined, 'Documents', true),
-              _buildNavItem(Icons.calendar_today_outlined, 'Leave', false),
-              _buildNavItem(Icons.location_on_outlined, 'Trips', false),
-              _buildNavItem(Icons.access_time, 'Sick Leave', false),
+              _buildNavItem(Icons.person_outline, 'Профиль', false),
+              _buildNavItem(Icons.description_outlined, 'Документы', true),
+              _buildNavItem(Icons.calendar_today_outlined, 'Отпуск', false),
+              _buildNavItem(Icons.location_on_outlined, 'Командировки', false),
+              _buildNavItem(Icons.access_time, 'Больничный', false),
             ],
           ),
         ),

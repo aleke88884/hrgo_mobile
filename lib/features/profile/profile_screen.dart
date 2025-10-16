@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hrgo_app/features/business_trip/business_trip_screen.dart';
 import 'package:hrgo_app/features/hr_document/hr_document_screen.dart';
 import 'package:hrgo_app/features/leave/leave_screen.dart';
+import 'package:hrgo_app/features/login/login_screen.dart';
 import 'package:hrgo_app/features/shift_schedule/shift_schedule_screen.dart';
 import 'package:hrgo_app/features/termination/termination_screen.dart';
 
@@ -82,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 8),
               // Job Title
               const Text(
-                'Engineer',
+                'Менеджер по персоналу',
                 style: TextStyle(
                   color: Color(0xFF8B92B0),
                   fontSize: 18,
@@ -102,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   );
                 },
-                child: _buildMenuItem(context, 'HR Documents'),
+                child: _buildMenuItem(context, 'Документы'),
               ),
               const SizedBox(height: 12),
               InkWell(
@@ -116,7 +117,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   );
                 },
-                child: _buildMenuItem(context, 'Leave'),
+                child: _buildMenuItem(context, 'Отпуск'),
               ),
               const SizedBox(height: 12),
               InkWell(
@@ -130,7 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   );
                 },
-                child: _buildMenuItem(context, 'Business Trip'),
+                child: _buildMenuItem(context, 'Командировки'),
               ),
               const SizedBox(height: 12),
               InkWell(
@@ -144,7 +145,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   );
                 },
-                child: _buildMenuItem(context, 'Sick Leave'),
+                child: _buildMenuItem(context, 'Отпуск больничный'),
               ),
               const SizedBox(height: 12),
               InkWell(
@@ -156,7 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     },
                   ),
                 ),
-                child: _buildMenuItem(context, 'Shift Schedule'),
+                child: _buildMenuItem(context, 'График смен'),
               ),
               const SizedBox(height: 12),
               InkWell(
@@ -170,7 +171,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   );
                 },
-                child: _buildMenuItem(context, 'Termination'),
+                child: _buildMenuItem(context, 'Прекращение'),
               ),
               const SizedBox(height: 40),
               // Logout Button
@@ -183,9 +184,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   border: Border.all(color: const Color(0xFF2C3E7C), width: 2),
                 ),
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
+                      ),
+                    );
+                  },
                   child: const Text(
-                    'Logout',
+                    'Выйти',
                     style: TextStyle(
                       color: Color(0xFF2C3E7C),
                       fontSize: 18,

@@ -1,7 +1,7 @@
 name: hrgo_app
 description: "A new Flutter project."
 publish_to: 'none'
-version: 0.1.4
+version: 0.1.5
 
 environment:
   sdk: ^3.9.2
@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  file_picker: ^10.3.3
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

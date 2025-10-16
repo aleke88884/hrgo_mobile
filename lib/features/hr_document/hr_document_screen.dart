@@ -22,7 +22,7 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'HR Documents (Review)',
+          'Кадровые документы (проверка)',
           style: TextStyle(
             color: Colors.white,
             fontSize: 20,
@@ -84,7 +84,7 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Engineer, Maintenance Department',
+                                'Инженер отдела технического обслуживания',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey[600],
@@ -92,7 +92,7 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'June 10, 2024',
+                                'Июнь 10, 2024',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey[600],
@@ -108,7 +108,7 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
 
                   // Instructions Text
                   const Text(
-                    'Please review all HR documents before signing.',
+                    'Пожалуйста, внимательно ознакомьтесь с представленными ниже кадровыми документами. После прочтения отметьте, что вы ознакомились со всеми документами, и нажмите кнопку "Proceed to Signing", чтобы продолжить процесс подписания.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 16,
@@ -119,13 +119,13 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
                   const SizedBox(height: 24),
 
                   // Document List
-                  _buildDocumentItem('Employment Contract.pdf'),
+                  _buildDocumentItem('Трудовой договор.pdf'),
                   const SizedBox(height: 12),
-                  _buildDocumentItem('Hiring Order.pdf'),
+                  _buildDocumentItem('Приказ о приеме на работу.pdf'),
                   const SizedBox(height: 12),
-                  _buildDocumentItem('Data & Confidentiality\nAgreement.pdf'),
+                  _buildDocumentItem('Защита данных и конфиденциальности.pdf'),
                   const SizedBox(height: 12),
-                  _buildDocumentItem('Additional Agreement.pdf'),
+                  _buildDocumentItem('Дополнительное соглашение.pdf'),
                   const SizedBox(height: 24),
 
                   // Checkbox
@@ -166,7 +166,7 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
                         const SizedBox(width: 12),
                         const Expanded(
                           child: Text(
-                            'I have read and understood all documents.',
+                            'Я ознакомился со всеми кадровыми документами и согласен с их содержанием.',
                             style: TextStyle(
                               fontSize: 15,
                               color: Color(0xFF424242),
@@ -215,7 +215,7 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
                     elevation: 0,
                   ),
                   child: const Text(
-                    'Proceed to Signing',
+                    'Перейти к подписанию',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -273,7 +273,7 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Text(
-                'View',
+                'Просмотреть',
                 style: TextStyle(
                   fontSize: 14,
                   color: Color(0xFF3F51B5),

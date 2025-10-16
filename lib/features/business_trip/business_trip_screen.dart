@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class BusinessTripScreen extends StatefulWidget {
-  const BusinessTripScreen({Key? key}) : super(key: key);
+  const BusinessTripScreen({super.key});
 
   @override
   State<BusinessTripScreen> createState() => _BusinessTripScreenState();
@@ -16,14 +16,14 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
 
   DateTime? _startDate;
   DateTime? _endDate;
-  String _selectedTransport = 'Plane';
+  String _selectedTransport = 'Самолет';
 
   final List<String> _transportTypes = [
-    'Plane',
-    'Train',
-    'Bus',
-    'Car',
-    'Other',
+    'Самолет',
+    'Поезд',
+    'Автобус',
+    'Автомобиль',
+    'Другое',
   ];
 
   @override
@@ -66,34 +66,34 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
   }
 
   String _formatDate(DateTime? date) {
-    if (date == null) return 'mm/dd/yyyy';
-    return '${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}/${date.year}';
+    if (date == null) return 'дд/мм/гггг';
+    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 
   void _handleSubmit() {
     if (_formKey.currentState?.validate() ?? false) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Business trip submitted successfully')),
+        const SnackBar(content: Text('Командировка успешно отправлена')),
       );
     }
   }
 
   void _signBusinessTrip() {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Opening signature page...')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Открывается страница подписи...')),
+    );
   }
 
   void _uploadExpenseReport() {
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Opening file picker...')));
+    ).showSnackBar(const SnackBar(content: Text('Открывается выбор файла...')));
   }
 
   void _signWithFaceId() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Face ID authentication initiated')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Инициализация Face ID...')));
   }
 
   @override
@@ -104,7 +104,7 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'Business Trip',
+          'Командировка',
           style: TextStyle(
             color: Color(0xFF3F3D56),
             fontSize: 22,
@@ -123,34 +123,34 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
               children: [
                 const SizedBox(height: 8),
 
-                // Destination Field
-                _buildLabel('Destination'),
+                // Пункт назначения
+                _buildLabel('Пункт назначения'),
                 const SizedBox(height: 8),
                 _buildTextField(
                   controller: _destinationController,
-                  hint: 'e.g., Berlin',
+                  hint: 'например, Берлин',
                 ),
 
                 const SizedBox(height: 20),
 
-                // Purpose Field
-                _buildLabel('Purpose'),
+                // Цель поездки
+                _buildLabel('Цель поездки'),
                 const SizedBox(height: 8),
                 _buildTextField(
                   controller: _purposeController,
-                  hint: 'e.g., Client Meeting',
+                  hint: 'например, Встреча с клиентом',
                 ),
 
                 const SizedBox(height: 20),
 
-                // Date Fields Row
+                // Даты поездки
                 Row(
                   children: [
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildLabel('Start Date'),
+                          _buildLabel('Дата начала'),
                           const SizedBox(height: 8),
                           _buildDateField(
                             _formatDate(_startDate),
@@ -164,7 +164,7 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildLabel('End Date'),
+                          _buildLabel('Дата окончания'),
                           const SizedBox(height: 8),
                           _buildDateField(
                             _formatDate(_endDate),
@@ -178,25 +178,25 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
 
                 const SizedBox(height: 20),
 
-                // Transport Type Dropdown
-                _buildLabel('Transport Type'),
+                // Транспорт
+                _buildLabel('Вид транспорта'),
                 const SizedBox(height: 8),
                 _buildDropdown(),
 
                 const SizedBox(height: 20),
 
-                // Estimated Budget Field
-                _buildLabel('Estimated Budget'),
+                // Бюджет
+                _buildLabel('Ориентировочный бюджет'),
                 const SizedBox(height: 8),
                 _buildTextField(
                   controller: _budgetController,
-                  hint: 'e.g., 500 EUR',
+                  hint: 'например, 500 EUR',
                   keyboardType: TextInputType.number,
                 ),
 
                 const SizedBox(height: 32),
 
-                // Submit Button
+                // Отправить
                 SizedBox(
                   width: double.infinity,
                   height: 56,
@@ -210,7 +210,7 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
                       elevation: 0,
                     ),
                     child: const Text(
-                      'Submit',
+                      'Отправить',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -221,7 +221,7 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
 
                 const SizedBox(height: 12),
 
-                // Sign Business Trip Order Button
+                // Подписать приказ
                 SizedBox(
                   width: double.infinity,
                   height: 56,
@@ -235,7 +235,7 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
                       backgroundColor: const Color(0xFFF0F0F5),
                     ),
                     child: const Text(
-                      'Sign Business Trip Order',
+                      'Подписать приказ о командировке',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -247,7 +247,7 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
 
                 const SizedBox(height: 12),
 
-                // Upload Expense Report Button
+                // Загрузить отчет
                 SizedBox(
                   width: double.infinity,
                   height: 56,
@@ -261,7 +261,7 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
                       backgroundColor: const Color(0xFFF0F0F5),
                     ),
                     child: const Text(
-                      'Upload Expense Report',
+                      'Загрузить отчет о расходах',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -273,8 +273,8 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
 
                 const SizedBox(height: 32),
 
-                // Trip Report Preview
-                _buildLabel('Trip Report Preview'),
+                // Превью отчета
+                _buildLabel('Предпросмотр отчета'),
                 const SizedBox(height: 12),
                 _buildReportPreview(),
 
@@ -340,7 +340,7 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
               displayText,
               style: TextStyle(
                 fontSize: 16,
-                color: displayText == 'mm/dd/yyyy'
+                color: displayText == 'дд/мм/гггг'
                     ? Colors.grey.shade400
                     : Colors.black,
               ),
@@ -396,7 +396,7 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
                 Text(
-                  'Report for',
+                  'Отчет по',
                   style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 SizedBox(height: 4),
@@ -413,10 +413,10 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
           ),
           const SizedBox(width: 16),
           ElevatedButton.icon(
-            onPressed: _signWithFaceId,
+            onPressed: null, // <-- изменим ниже
             icon: const Icon(Icons.fingerprint, size: 20),
             label: const Text(
-              'Sign with Face\nID',
+              'Подписать\nFace ID',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 12),
             ),

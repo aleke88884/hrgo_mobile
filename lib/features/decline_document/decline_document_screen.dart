@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 class DeclineDocumentScreen extends StatefulWidget {
   final String documentTitle;
 
-  const DeclineDocumentScreen({Key? key, required this.documentTitle})
-    : super(key: key);
+  const DeclineDocumentScreen({super.key, required this.documentTitle});
 
   @override
   State<DeclineDocumentScreen> createState() => _DeclineDocumentScreenState();
@@ -31,7 +30,7 @@ class _DeclineDocumentScreenState extends State<DeclineDocumentScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Decline Document',
+          'Отклонить документ',
           style: TextStyle(
             color: Colors.black,
             fontSize: 18,
@@ -48,7 +47,7 @@ class _DeclineDocumentScreenState extends State<DeclineDocumentScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Please provide a reason for declining this document:',
+                    'Пожалуйста, укажите причину отклонения документа:',
                     style: TextStyle(
                       fontSize: 16,
                       color: Color(0xFF212121),
@@ -76,7 +75,7 @@ class _DeclineDocumentScreenState extends State<DeclineDocumentScreen> {
                       controller: _reasonController,
                       maxLines: 10,
                       decoration: const InputDecoration(
-                        hintText: 'Type your reason here',
+                        hintText: 'Введите причину отклонения',
                         hintStyle: TextStyle(
                           color: Color(0xFFBDBDBD),
                           fontSize: 15,
@@ -118,7 +117,7 @@ class _DeclineDocumentScreenState extends State<DeclineDocumentScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text(
-                            'Please provide a reason for declining',
+                            'Пожалуйста, укажите причину отклонения.',
                           ),
                           backgroundColor: Colors.red,
                         ),
@@ -140,7 +139,7 @@ class _DeclineDocumentScreenState extends State<DeclineDocumentScreen> {
                     elevation: 0,
                   ),
                   child: const Text(
-                    'Submit',
+                    'Отклонить документ',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

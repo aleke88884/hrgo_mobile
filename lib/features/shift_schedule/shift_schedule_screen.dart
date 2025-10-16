@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ShiftScheduleScreen extends StatefulWidget {
-  const ShiftScheduleScreen({Key? key}) : super(key: key);
+  const ShiftScheduleScreen({super.key});
 
   @override
   State<ShiftScheduleScreen> createState() => _ShiftScheduleScreenState();
@@ -75,7 +75,7 @@ class _ShiftScheduleScreenState extends State<ShiftScheduleScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text(
-          'Shift Schedule',
+          'График смен',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20,
@@ -100,7 +100,7 @@ class _ShiftScheduleScreenState extends State<ShiftScheduleScreen> {
                   // Workday Card
                   _buildShiftCard(
                     icon: Icons.work_outline,
-                    title: 'Workday',
+                    title: 'Рабочий день',
                     subtitle: '8:00 AM - 5:00 PM',
                     iconColor: const Color(0xFF3F3D56),
                   ),
@@ -110,8 +110,8 @@ class _ShiftScheduleScreenState extends State<ShiftScheduleScreen> {
                   // Off Day Card
                   _buildShiftCard(
                     icon: Icons.calendar_today_outlined,
-                    title: 'Off Day',
-                    subtitle: 'All Day',
+                    title: 'Выходной день',
+                    subtitle: 'Весь день',
                     iconColor: const Color(0xFF3F3D56),
                   ),
 
@@ -130,7 +130,6 @@ class _ShiftScheduleScreenState extends State<ShiftScheduleScreen> {
           _buildAcknowledgeButton(),
         ],
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 
@@ -338,10 +337,10 @@ class _ShiftScheduleScreenState extends State<ShiftScheduleScreen> {
                 style: TextStyle(fontSize: 14, color: Color(0xFF78350F)),
                 children: [
                   TextSpan(
-                    text: 'New version available, ',
+                    text: 'Новая версия доступна, ',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  TextSpan(text: 'please re-confirm.'),
+                  TextSpan(text: 'Пожалуйста подтвердите.'),
                 ],
               ),
             ),
@@ -372,7 +371,7 @@ class _ShiftScheduleScreenState extends State<ShiftScheduleScreen> {
             onPressed: () {
               // Handle acknowledge action
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Schedule acknowledged')),
+                const SnackBar(content: Text('График подтвержден!')),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -383,70 +382,12 @@ class _ShiftScheduleScreenState extends State<ShiftScheduleScreen> {
               elevation: 0,
             ),
             child: const Text(
-              'Acknowledge and Confirm',
+              'Подтвердить',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(Icons.home_outlined, 'Home', false),
-              _buildNavItem(Icons.description_outlined, 'Payslip', false),
-              _buildNavItem(Icons.calendar_today, 'Schedule', true),
-              _buildNavItem(Icons.person_outline, 'Profile', false),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isActive) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: isActive ? const Color(0xFF3F3D56) : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(
-            icon,
-            color: isActive ? Colors.white : Colors.grey,
-            size: 24,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: isActive ? const Color(0xFF3F3D56) : Colors.grey,
-            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-          ),
-        ),
-      ],
     );
   }
 }

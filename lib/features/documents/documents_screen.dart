@@ -9,10 +9,10 @@ class DocumentsScreen extends StatefulWidget {
 
 class _DocumentsScreenState extends State<DocumentsScreen> {
   final List<DocumentItem> documents = [
-    DocumentItem(title: 'Employment Contract'),
-    DocumentItem(title: 'Hiring Order'),
-    DocumentItem(title: 'Data & Confidentiality Agreement'),
-    DocumentItem(title: 'Additional Agreement'),
+    DocumentItem(title: 'Трудовой договор'),
+    DocumentItem(title: 'Приказ о приеме на работу'),
+    DocumentItem(title: 'Соглашение о защите данных и конфиденциальности'),
+    DocumentItem(title: 'Дополнительное соглашение'),
   ];
 
   void _onDocumentTap(int index) {
@@ -32,7 +32,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         //   onPressed: () => Navigator.of(context).pop(),
         // ),
         title: const Text(
-          'Documents',
+          'Документы',
           style: TextStyle(
             color: Color(0xFF3D3D7E),
             fontSize: 24,
