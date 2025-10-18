@@ -213,6 +213,7 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
                       'Отправить',
                       style: TextStyle(
                         fontSize: 16,
+                        color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

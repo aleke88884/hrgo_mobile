@@ -62,11 +62,13 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
                             color: const Color(0xFFE0E0E0),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
-                            Icons.person_outline,
-                            size: 40,
-                            color: Color(0xFF9E9E9E),
-                          ),
+                          child: Image.asset('assets/profile.jpg'),
+
+                          // const Icon(
+                          //   Icons.person_outline,
+                          //   size: 40,
+                          //   color: Color(0xFF9E9E9E),
+                          // ),
                         ),
                         const SizedBox(width: 16),
                         // Info

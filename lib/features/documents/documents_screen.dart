@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hrgo_app/features/document_viewer/document_viewer_screen.dart';
 
 class DocumentsScreen extends StatefulWidget {
   const DocumentsScreen({Key? key}) : super(key: key);
@@ -15,7 +16,18 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     DocumentItem(title: 'Дополнительное соглашение'),
   ];
 
-  void _onDocumentTap(int index) {
+  void _onDocumentTap(int index, String documentTitle) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return DocumentViewerScreen(
+            documentTitle: documentTitle,
+            documentContent: "dummy_content.pdf",
+          );
+        },
+      ),
+    );
     print('Document tapped: ${documents[index].title}');
     // Add navigation or action here
   }
@@ -51,6 +63,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           child: ListView.separated(
             padding: EdgeInsets.zero,
             itemCount: documents.length,
+
             separatorBuilder: (context, index) => const Divider(
               height: 1,
               thickness: 1,
@@ -75,7 +88,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   color: Color(0xFF3D3D7E),
                   size: 20,
                 ),
-                onTap: () => _onDocumentTap(index),
+                onTap: () => _onDocumentTap(index, documents[index].title),
               );
             },
           ),

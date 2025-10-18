@@ -96,11 +96,12 @@ class _TerminationScreenState extends State<TerminationScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
-                      Icon(Icons.fingerprint, size: 24),
+                      Icon(Icons.fingerprint, size: 24, color: Colors.white),
                       SizedBox(width: 8),
                       Text(
                         'Подписать через Face ID',
                         style: TextStyle(
+                          color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -147,7 +148,7 @@ class _TerminationScreenState extends State<TerminationScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      // bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 

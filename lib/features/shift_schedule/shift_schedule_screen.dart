@@ -10,7 +10,7 @@ class ShiftScheduleScreen extends StatefulWidget {
 class _ShiftScheduleScreenState extends State<ShiftScheduleScreen> {
   DateTime selectedMonth = DateTime(2024, 10);
   DateTime? selectedDate = DateTime(2024, 10, 1);
-  bool showVersionWarning = true;
+  bool showVersionWarning = false;
 
   // Weekend dates (Saturdays) for highlighting
   final List<int> weekendDates = [5, 12, 19, 26];
@@ -117,10 +117,10 @@ class _ShiftScheduleScreenState extends State<ShiftScheduleScreen> {
 
                   const SizedBox(height: 16),
 
-                  // Warning Banner
-                  if (showVersionWarning) _buildWarningBanner(),
+                  // // Warning Banner
+                  // if (showVersionWarning) _buildWarningBanner(),
 
-                  const SizedBox(height: 100),
+                  // const SizedBox(height: 100),
                 ],
               ),
             ),
@@ -331,20 +331,20 @@ class _ShiftScheduleScreenState extends State<ShiftScheduleScreen> {
             size: 24,
           ),
           const SizedBox(width: 12),
-          Expanded(
-            child: RichText(
-              text: const TextSpan(
-                style: TextStyle(fontSize: 14, color: Color(0xFF78350F)),
-                children: [
-                  TextSpan(
-                    text: 'Новая версия доступна, ',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  TextSpan(text: 'Пожалуйста подтвердите.'),
-                ],
-              ),
-            ),
-          ),
+          // Expanded(
+          //   child: RichText(
+          //     text: const TextSpan(
+          //       style: TextStyle(fontSize: 14, color: Color(0xFF78350F)),
+          //       children: [
+          //         TextSpan(
+          //           text: 'Новая версия доступна, ',
+          //           style: TextStyle(fontWeight: FontWeight.bold),
+          //         ),
+          //         TextSpan(text: 'Пожалуйста подтвердите.'),
+          //       ],
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -383,7 +383,11 @@ class _ShiftScheduleScreenState extends State<ShiftScheduleScreen> {
             ),
             child: const Text(
               'Подтвердить',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ),
