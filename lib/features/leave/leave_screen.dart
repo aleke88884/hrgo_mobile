@@ -1,4 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:hrgo_app/common/constants.dart';
+import 'package:hrgo_app/core/secure_storage/secure_storage_service.dart';
+import 'package:hrgo_app/features/leave/domain/leave_service.dart';
 import 'package:intl/intl.dart';
 
 class LeaveScreen extends StatefulWidget {
@@ -12,6 +17,8 @@ class _LeaveScreenState extends State<LeaveScreen> {
   DateTime? _startDate;
   DateTime? _endDate;
   String _leaveType = 'Ежегодный';
+  final LeaveService _leaveService = LeaveService();
+  final SecureStorageService _storage = SecureStorageService();
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
 
@@ -80,7 +87,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
     }
   }
 
-  void _submitLeaveRequest() {
+  Future<void> _submitLeaveRequest() async {
     if (_startDate == null || _endDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -100,7 +107,37 @@ class _LeaveScreenState extends State<LeaveScreen> {
       );
       return;
     }
+    try {
+      final int employeeId = await _storage
+          .readData(Constants.employeeIdStorageKey)
+          .then((value) => value != null ? int.parse(value) : 6);
+      final response = await _leaveService.createLeaveRequest(
+        requestType: _leaveType == 'Без содержания' ? 'unpaid' : 'paid',
+        base: _leaveType == 'Ежегодный'
+            ? 'Annual-leave'
+            : _leaveType == 'Больничный'
+            ? 'Sick-leave'
+            : _leaveType == 'Учебный'
+            ? 'Study-leave'
+            : 'Other',
+        dateFrom: DateFormat('yyyy-MM-dd').format(_startDate!),
+        dateTo: DateFormat('yyyy-MM-dd').format(_endDate!),
+        employeeId: employeeId,
+      );
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✅ Заявка успешно отправлена!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      log('Ответ сервера: $response');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ошибка: $e'), backgroundColor: Colors.red),
+      );
+    }
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Заявка на отпуск успешно отправлена'),
@@ -158,16 +195,6 @@ class _LeaveScreenState extends State<LeaveScreen> {
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF3F3D56),
                 ),
-              ),
-              const SizedBox(height: 16),
-              _buildLeaveCard(
-                dates: '22.04.2024 - 26.04.2024',
-                status: 'pending',
-              ),
-              const SizedBox(height: 12),
-              _buildLeaveCard(
-                dates: '01.06.2024 - 15.06.2024',
-                status: 'approved',
               ),
             ],
           ),
