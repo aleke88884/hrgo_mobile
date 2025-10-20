@@ -9,15 +9,17 @@ class LeaveService {
 
   static const String _endpoint = '/send_request?model=hr.leave.request';
 
-  LeaveService({Dio? dio}) : _dio = dio ?? Dio();
+  LeaveService({Dio? dio}) : _dio = dio ?? Dio() {
+    _dio.interceptors.add(
+      LogInterceptor(
+        requestBody: true,
+        responseBody: true,
+        requestHeader: true,
+        error: true,
+      ),
+    );
+  }
 
-  /// Создание запроса на отпуск
-  ///
-  /// [requestType] - тип отпуска: "paid" (оплачиваемый) или "unpaid" (неоплачиваемый)
-  /// [base] - базовый тип отпуска, например: "Annual-leave", "Sick-leave"
-  /// [dateFrom] - дата начала в формате YYYY-MM-DD
-  /// [dateTo] - дата окончания в формате YYYY-MM-DD
-  /// [employeeId] - ID сотрудника
   Future<LeaveResponse> createLeaveRequest({
     required String requestType,
     required String base,
@@ -26,7 +28,6 @@ class LeaveService {
     required int employeeId,
   }) async {
     try {
-      // Получаем сохранённые данные авторизации
       final domain = await _storage.readData(Constants.domainStorageKey);
       final apiKey = await _storage.readData(Constants.apikeyStorageKey);
 
@@ -42,10 +43,9 @@ class LeaveService {
         );
       }
 
-      // Формируем URL
-      final url = 'http://$domain$_endpoint';
+      final cleanDomain = domain.trim();
+      final url = 'http://$cleanDomain:8069$_endpoint';
 
-      // Формируем тело запроса согласно документации
       final body = {
         "fields": [
           "request_type",
@@ -63,24 +63,33 @@ class LeaveService {
         },
       };
 
-      // Отправляем запрос
       final response = await _dio.post(
         url,
-        data: jsonEncode(body),
+        // ❌ не нужно jsonEncode — Dio сам сериализует в JSON
+        data: body,
         options: Options(
-          headers: {'api-key': apiKey, 'Content-Type': 'application/json'},
+          headers: {
+            'Content-Type': 'application/json',
+            'api-key': apiKey,
+            'login': 'test',
+            'password': 'test',
+          },
           validateStatus: (status) => status != null && status < 500,
         ),
       );
 
-      // Обрабатываем ответ
       if (response.statusCode == 200) {
-        final data = response.data;
+        dynamic data = response.data;
+
+        // Иногда Dio возвращает строку, поэтому явно декодируем при необходимости
+        if (data is String) {
+          data = jsonDecode(data);
+        }
 
         if (data is Map<String, dynamic> && data.containsKey('New resource')) {
           return LeaveResponse.fromJson(data);
         } else {
-          throw LeaveException('Неожиданный формат ответа от сервера');
+          throw LeaveException('Неожиданный формат ответа от сервера: $data');
         }
       } else if (response.statusCode == 400) {
         final error =
@@ -91,37 +100,24 @@ class LeaveService {
       } else if (response.statusCode == 401) {
         throw LeaveException('Ошибка авторизации. Пожалуйста, войдите снова.');
       } else if (response.statusCode == 403) {
-        throw LeaveException('Недостаточно прав для создания заявки на отпуск');
+        throw LeaveException(
+          'Недостаточно прав для создания заявки на отпуск.',
+        );
       } else if (response.statusCode == 404) {
-        throw LeaveException('API endpoint не найден');
+        throw LeaveException('API endpoint не найден.');
       } else {
         throw LeaveException('Ошибка сервера: ${response.statusCode}');
       }
     } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionTimeout) {
-        throw LeaveException('Превышено время ожидания соединения');
-      } else if (e.type == DioExceptionType.receiveTimeout) {
-        throw LeaveException('Превышено время ожидания ответа');
-      } else if (e.type == DioExceptionType.connectionError) {
-        throw LeaveException('Ошибка подключения к серверу');
-      }
-
       final errorMessage =
-          e.response?.data?['error']?.toString() ??
-          e.response?.data?['message']?.toString() ??
-          e.message ??
-          'Неизвестная ошибка сети';
-
+          e.response?.data?.toString() ?? e.message ?? 'Ошибка сети';
       throw LeaveException(errorMessage);
-    } on LeaveException {
-      rethrow;
     } catch (e) {
       throw LeaveException('Непредвиденная ошибка: ${e.toString()}');
     }
   }
 }
 
-/// Модель успешного ответа от API
 class LeaveResponse {
   final int id;
   final String requestType;
@@ -144,7 +140,6 @@ class LeaveResponse {
   factory LeaveResponse.fromJson(Map<String, dynamic> json) {
     try {
       final resourcesList = json['New resource'];
-
       if (resourcesList == null ||
           resourcesList is! List ||
           resourcesList.isEmpty) {
@@ -152,9 +147,8 @@ class LeaveResponse {
       }
 
       final data = resourcesList.first as Map<String, dynamic>;
-
-      // Парсинг employee_id, который приходит как массив [id, "name"]
       final employeeData = data['employee_id'];
+
       int empId = 0;
       String empName = '';
 
@@ -181,7 +175,6 @@ class LeaveResponse {
     }
   }
 
-  /// Конвертация в JSON (для сохранения или логирования)
   Map<String, dynamic> toJson() => {
     'id': id,
     'request_type': requestType,
@@ -193,19 +186,13 @@ class LeaveResponse {
   };
 
   @override
-  String toString() {
-    return 'LeaveResponse(id: $id, requestType: $requestType, base: $base, '
-        'dateFrom: $dateFrom, dateTo: $dateTo, employeeId: $employeeId, '
-        'employeeName: $employeeName)';
-  }
+  String toString() =>
+      'LeaveResponse(id: $id, requestType: $requestType, base: $base, dateFrom: $dateFrom, dateTo: $dateTo, employeeId: $employeeId, employeeName: $employeeName)';
 }
 
-/// Кастомное исключение для операций с отпусками
 class LeaveException implements Exception {
   final String message;
-
   LeaveException(this.message);
-
   @override
   String toString() => message;
 }

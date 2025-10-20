@@ -261,10 +261,7 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DocumentViewerScreen(
-                    documentTitle: title.replaceAll('\n', ' '),
-                    documentContent: _getDocumentContent(title),
-                  ),
+                  builder: (context) => DocumentViewerScreen(filePath: ''),
                 ),
               );
             },

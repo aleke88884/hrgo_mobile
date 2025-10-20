@@ -1,14 +1,17 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:hrgo_app/features/decline_document/decline_document_screen.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:share_plus/share_plus.dart';
 
+/// Экран для просмотра PDF документов
 class DocumentViewerScreen extends StatefulWidget {
-  final String documentTitle;
-  final String documentContent;
+  final String filePath;
+  final String title;
 
   const DocumentViewerScreen({
     super.key,
-    required this.documentTitle,
-    required this.documentContent,
+    required this.filePath,
+    this.title = 'Документ',
   });
 
   @override
@@ -16,144 +19,206 @@ class DocumentViewerScreen extends StatefulWidget {
 }
 
 class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
+  int? totalPages;
+  int currentPage = 0;
+  bool isReady = false;
+  String errorMessage = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          widget.documentTitle,
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: SingleChildScrollView(
-                child: Text(
-                  widget.documentContent,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: Color(0xFF212121),
-                    height: 1.6,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: SafeArea(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 50,
-                      child: OutlinedButton(
-                        onPressed: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DeclineDocumentScreen(
-                                documentTitle: widget.documentTitle,
-                              ),
-                            ),
-                          );
-
-                          if (result != null && result['declined'] == true) {
-                            // Document was declined, go back to HR documents screen
-                            if (context.mounted) {
-                              Navigator.pop(context);
-                            }
-                          }
-                        },
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(
-                            color: Color(0xFF3F51B5),
-                            width: 2,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Отклонить',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF3F51B5),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: SizedBox(
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Handle sign action
-                          Navigator.pop(context, true);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF3F51B5),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: const Text(
-                          'Подписать',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+        title: Text(widget.title),
+        actions: [
+          // Кнопка "Поделиться"
+          IconButton(
+            icon: const Icon(Icons.share),
+            onPressed: _shareDocument,
+            tooltip: 'Поделиться',
           ),
         ],
       ),
+      body: Stack(
+        children: [
+          PDFView(
+            filePath: widget.filePath,
+            enableSwipe: true,
+            swipeHorizontal: false,
+            autoSpacing: true,
+            pageFling: true,
+            pageSnap: true,
+            defaultPage: currentPage,
+            fitPolicy: FitPolicy.BOTH,
+            preventLinkNavigation: false,
+            onRender: (pages) {
+              setState(() {
+                totalPages = pages;
+                isReady = true;
+              });
+            },
+            onError: (error) {
+              setState(() {
+                errorMessage = error.toString();
+              });
+              print('❌ Ошибка PDF: $error');
+            },
+            onPageError: (page, error) {
+              setState(() {
+                errorMessage = 'Ошибка на странице $page: $error';
+              });
+              print('❌ Ошибка страницы $page: $error');
+            },
+            onPageChanged: (page, total) {
+              setState(() {
+                currentPage = page ?? 0;
+              });
+            },
+          ),
+
+          // Индикатор загрузки
+          if (!isReady && errorMessage.isEmpty)
+            const Center(child: CircularProgressIndicator()),
+
+          // Сообщение об ошибке
+          if (errorMessage.isNotEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Colors.red,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Ошибка загрузки документа',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      errorMessage,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          // Индикатор страницы внизу
+          if (isReady && totalPages != null)
+            Positioned(
+              bottom: 16,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${currentPage + 1} / $totalPages',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
+  }
+
+  /// Поделиться документом
+  Future<void> _shareDocument() async {
+    try {
+      final file = File(widget.filePath);
+      if (await file.exists()) {
+        await Share.shareXFiles([XFile(widget.filePath)], text: widget.title);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка при попытке поделиться: $e')),
+        );
+      }
+    }
+  }
+}
+
+/// Альтернативный простой просмотрщик (если flutter_pdfview не подходит)
+class SimplePdfViewerScreen extends StatelessWidget {
+  final String filePath;
+  final String title;
+
+  const SimplePdfViewerScreen({
+    Key? key,
+    required this.filePath,
+    this.title = 'Документ',
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            onPressed: () => _shareDocument(context),
+          ),
+        ],
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.picture_as_pdf, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            Text(
+              'PDF документ готов',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Файл сохранен локально',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () => _shareDocument(context),
+              icon: const Icon(Icons.share),
+              label: const Text('Поделиться'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _shareDocument(BuildContext context) async {
+    try {
+      final file = File(filePath);
+      if (await file.exists()) {
+        await Share.shareXFiles([XFile(filePath)], text: title);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
+      }
+    }
   }
 }
