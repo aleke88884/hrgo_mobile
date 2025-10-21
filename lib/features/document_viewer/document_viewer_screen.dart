@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:hrgo_app/features/chat_screen/ai_chat_screen.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:share_plus/share_plus.dart';
 
 /// Экран для просмотра PDF документов
@@ -35,6 +37,19 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
             icon: const Icon(Icons.share),
             onPressed: _shareDocument,
             tooltip: 'Поделиться',
+          ),
+          IconButton(
+            icon: const Icon(
+              LucideIcons.bot,
+              color: Color(0xFF2C3E7C),
+              size: 28,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AiChatScreen()),
+              );
+            },
           ),
         ],
       ),

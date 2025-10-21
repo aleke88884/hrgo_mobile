@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hrgo_app/features/chat_screen/ai_chat_screen.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class BusinessTripScreen extends StatefulWidget {
   const BusinessTripScreen({super.key});
@@ -112,6 +114,21 @@ class _BusinessTripScreenState extends State<BusinessTripScreen> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(
+              LucideIcons.bot,
+              color: Color(0xFF2C3E7C),
+              size: 28,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AiChatScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(

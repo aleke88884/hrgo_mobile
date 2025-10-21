@@ -1,7 +1,7 @@
 name: hrgo_app
 description: "A new Flutter project."
 publish_to: 'none'
-version: 0.1.10
+version: 0.1.11
 
 environment:
   sdk: ^3.9.2
@@ -17,6 +17,7 @@ dependencies:
   flutter_pdfview: ^1.4.3
   share_plus: ^12.0.1
   webview_flutter: ^4.13.0
+  lucide_icons: ^0.257.0
 
 dev_dependencies:
   flutter_test:
@@ -28,6 +29,7 @@ flutter:
 
   assets:
     - assets/
+    - assets/chat/chat.html
     - assets/logo_oil.png
     - assets/profile.jpg
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hrgo_app/features/chat_screen/ai_chat_screen.dart';
 import 'package:hrgo_app/features/document_viewer/document_viewer_screen.dart';
 import 'package:hrgo_app/features/document_viewer/domain/document_service.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class DocumentsScreen extends StatefulWidget {
   const DocumentsScreen({super.key});
@@ -110,6 +112,21 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              LucideIcons.bot,
+              color: Color(0xFF2C3E7C),
+              size: 28,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AiChatScreen()),
+              );
+            },
+          ),
+        ],
         centerTitle: true,
       ),
       body: Stack(

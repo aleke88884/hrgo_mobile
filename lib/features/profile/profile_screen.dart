@@ -6,6 +6,7 @@ import 'package:hrgo_app/features/leave/leave_screen.dart';
 import 'package:hrgo_app/features/login/login_screen.dart';
 import 'package:hrgo_app/features/shift_schedule/shift_schedule_screen.dart';
 import 'package:hrgo_app/features/termination/termination_screen.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -41,7 +42,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.chat, color: Color(0xFF2C3E7C), size: 28),
+            icon: const Icon(
+              LucideIcons.bot,
+              color: Color(0xFF2C3E7C),
+              size: 28,
+            ),
             onPressed: () {
               Navigator.push(
                 context,

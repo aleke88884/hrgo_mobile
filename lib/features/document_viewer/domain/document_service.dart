@@ -28,28 +28,12 @@ class DocumentService {
     required int documentId,
   }) async {
     try {
-      final domain = await _storage.readData(Constants.domainStorageKey);
       final apiKey = await _storage.readData(Constants.apikeyStorageKey);
 
-      if (domain == null || domain.isEmpty) {
-        throw DocumentException(
-          'Домен не найден. Пожалуйста, авторизуйтесь снова.',
-        );
-      }
-
-      if (apiKey == null || apiKey.isEmpty) {
-        throw DocumentException(
-          'API-ключ не найден. Пожалуйста, авторизуйтесь снова.',
-        );
-      }
-
       // Очистим возможные http/https и добавим безопасный https
-      var cleanDomain = domain.trim();
-      if (cleanDomain.startsWith('http')) {
-        cleanDomain = cleanDomain.replaceAll(RegExp(r'^https?://'), '');
-      }
+
       final fullUrl =
-          'http://$cleanDomain$_endpoint?model=$modelName&Id=$documentId';
+          'http://api-dev.hrgo.kz$_endpoint?model=$modelName&Id=$documentId';
 
       print('🌐 Запрос документа: $fullUrl');
 

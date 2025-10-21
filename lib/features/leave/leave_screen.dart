@@ -3,8 +3,10 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:hrgo_app/common/constants.dart';
 import 'package:hrgo_app/core/secure_storage/secure_storage_service.dart';
+import 'package:hrgo_app/features/chat_screen/ai_chat_screen.dart';
 import 'package:hrgo_app/features/leave/domain/leave_service.dart';
 import 'package:intl/intl.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class LeaveScreen extends StatefulWidget {
   const LeaveScreen({super.key});
@@ -171,6 +173,21 @@ class _LeaveScreenState extends State<LeaveScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              LucideIcons.bot,
+              color: Color(0xFF2C3E7C),
+              size: 28,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AiChatScreen()),
+              );
+            },
+          ),
+        ],
         centerTitle: true,
         iconTheme: const IconThemeData(color: Color(0xFF3F3D56)),
       ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hrgo_app/features/chat_screen/ai_chat_screen.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class DeclineDocumentScreen extends StatefulWidget {
   final String documentTitle;
@@ -37,6 +39,21 @@ class _DeclineDocumentScreenState extends State<DeclineDocumentScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              LucideIcons.bot,
+              color: Color(0xFF2C3E7C),
+              size: 28,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AiChatScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [

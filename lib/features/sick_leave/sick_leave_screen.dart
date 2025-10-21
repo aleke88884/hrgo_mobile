@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:hrgo_app/features/chat_screen/ai_chat_screen.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class SickLeaveScreen extends StatefulWidget {
   const SickLeaveScreen({super.key});
@@ -106,6 +108,21 @@ class _SickLeaveScreenState extends State<SickLeaveScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              LucideIcons.bot,
+              color: Color(0xFF2C3E7C),
+              size: 28,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AiChatScreen()),
+              );
+            },
+          ),
+        ],
         centerTitle: true,
       ),
       body: Column(

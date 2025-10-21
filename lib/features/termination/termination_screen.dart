@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hrgo_app/features/chat_screen/ai_chat_screen.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class TerminationScreen extends StatefulWidget {
   const TerminationScreen({Key? key}) : super(key: key);
@@ -44,6 +46,21 @@ class _TerminationScreenState extends State<TerminationScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              LucideIcons.bot,
+              color: Color(0xFF2C3E7C),
+              size: 28,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AiChatScreen()),
+              );
+            },
+          ),
+        ],
         centerTitle: true,
       ),
       body: SingleChildScrollView(
