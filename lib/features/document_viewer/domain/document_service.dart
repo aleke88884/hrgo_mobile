@@ -49,7 +49,7 @@ class DocumentService {
         cleanDomain = cleanDomain.replaceAll(RegExp(r'^https?://'), '');
       }
       final fullUrl =
-          'https://$cleanDomain$_endpoint?model=$modelName&Id=$documentId';
+          'http://$cleanDomain$_endpoint?model=$modelName&Id=$documentId';
 
       print('🌐 Запрос документа: $fullUrl');
 

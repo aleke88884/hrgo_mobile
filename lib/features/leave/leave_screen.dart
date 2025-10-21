@@ -16,6 +16,7 @@ class LeaveScreen extends StatefulWidget {
 class _LeaveScreenState extends State<LeaveScreen> {
   DateTime? _startDate;
   DateTime? _endDate;
+  bool isLoading = false;
   String _leaveType = 'Ежегодный';
   final LeaveService _leaveService = LeaveService();
   final SecureStorageService _storage = SecureStorageService();
@@ -108,6 +109,9 @@ class _LeaveScreenState extends State<LeaveScreen> {
       return;
     }
     try {
+      setState(() {
+        isLoading = true;
+      });
       final int employeeId = await _storage
           .readData(Constants.employeeIdStorageKey)
           .then((value) => value != null ? int.parse(value) : 6);
@@ -137,6 +141,12 @@ class _LeaveScreenState extends State<LeaveScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ошибка: $e'), backgroundColor: Colors.red),
       );
+
+      return;
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -336,14 +346,20 @@ class _LeaveScreenState extends State<LeaveScreen> {
           ),
           elevation: 0,
         ),
-        child: const Text(
-          'Отправить',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
+        child: isLoading
+            ? Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : const Text(
+                'Отправить',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
       ),
     );
   }
