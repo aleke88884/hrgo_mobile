@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hrgo_app/features/business_trip/business_trip_screen.dart';
+import 'package:hrgo_app/features/chat_screen/ai_chat_screen.dart';
 import 'package:hrgo_app/features/hr_document/hr_document_screen.dart';
 import 'package:hrgo_app/features/leave/leave_screen.dart';
 import 'package:hrgo_app/features/login/login_screen.dart';
@@ -38,6 +39,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               size: 28,
             ),
             onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.chat, color: Color(0xFF2C3E7C), size: 28),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AiChatScreen()),
+              );
+            },
           ),
         ],
       ),
