@@ -22,78 +22,21 @@ class _AiChatScreenState extends State<AiChatScreen> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.white)
       ..setUserAgent(
-        "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0 Mobile Safari/537.36",
+        "Mozilla/5.0 (Linux; Android 13; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0 Safari/537.36",
       )
-      ..enableZoom(false)
       ..setNavigationDelegate(
         NavigationDelegate(
-          onPageStarted: (String url) {
-            setState(() => _isLoading = true);
-          },
-          onPageFinished: (String url) {
-            setState(() => _isLoading = false);
-          },
-          onWebResourceError: (WebResourceError error) {
-            debugPrint('WebView error: ${error.description}');
-          },
+          onPageStarted: (_) => setState(() => _isLoading = true),
+          onPageFinished: (_) => setState(() => _isLoading = false),
+          onWebResourceError: (err) =>
+              debugPrint("WebView error: ${err.description}"),
         ),
       )
-      // ..loadFile('assets/chat/chat.html');
-      // ..loadRequest(
-      //   Uri.parse(
-      //     'https://ai.hrgo.kz/embed/13ec3103-3f2a-4a91-aa3d-cb5442972755',
-      //   ),
-      // );
-      ..loadHtmlString('''
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>HRGO AI Assistant</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background-color: #fff;
-      overflow: hidden;
-    }
-    #flowise-chatbot {
-      width: 100%;
-      height: 100vh;
-      position: fixed;
-      top: 0;
-      left: 0;
-    }
-  </style>
-</head>
-
-<body>
-  <div id="flowise-chatbot"></div>
-
-  <script src="https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"></script>
-  <script>
-    window.addEventListener('load', () => {
-      Chatbot.init({
-        chatflowid: "13ec3103-3f2a-4a91-aa3d-cb5442972755",
-        apiHost: "https://ai.hrgo.kz",
-        theme: {
-          chatWindow: {
-            showTitle: true,
-            title: 'HRGO AI Assistant',
-            titleAvatarSrc: 'https://cdn-icons-png.flaticon.com/512/4712/4712027.png',
-            welcomeMessage: 'Здравствуйте! Чем могу помочь?',
-            backgroundColor: '#f9fafb',
-          },
-        },
-      });
-    });
-  </script>
-</body>
-</html>
-''');
+      ..loadRequest(
+        Uri.parse(
+          "https://ai.hrgo.kz/chatbot/13ec3103-3f2a-4a91-aa3d-cb5442972755",
+        ),
+      );
   }
 
   void _showSettings() {
