@@ -36,11 +36,16 @@ class DocumentService {
           'http://api-dev.hrgo.kz$_endpoint?model=$modelName&Id=$documentId';
 
       print('🌐 Запрос документа: $fullUrl');
-
+      final userLogin = await _storage.readData(Constants.userLogin);
+      final userPassword = await _storage.readData(Constants.userPassword);
       final response = await _dio.get(
         fullUrl,
         options: Options(
-          headers: {'login': 'test', 'password': 'test', 'api-key': apiKey},
+          headers: {
+            'login': userLogin,
+            'password': userPassword,
+            'api-key': apiKey,
+          },
           responseType: ResponseType.bytes,
           followRedirects: true,
           validateStatus: (status) => status != null && status < 500,

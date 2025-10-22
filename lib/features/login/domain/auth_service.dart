@@ -47,13 +47,17 @@ class AuthApiService {
       final authResponse = AuthResponse.fromJson(data);
 
       // Сохраняем данные в SecureStorage
-      await _storage.writeData(cleanDomain, Constants.domainStorageKey);
-      await _storage.writeData(authResponse.apiKey, Constants.apikeyStorageKey);
+      await _storage.writeData(Constants.domainStorageKey, cleanDomain);
+      await _storage.writeData(Constants.apikeyStorageKey, authResponse.apiKey);
       await _storage.writeData(
-        authResponse.employeeId.toString(),
         Constants.employeeIdStorageKey,
+        authResponse.employeeId.toString(),
       );
+      await _storage.writeData(Constants.userLogin, login);
+      await _storage.writeData(Constants.userPassword, password);
 
+      final apikey = await _storage.readData(Constants.apikeyStorageKey);
+      print(apikey ?? "NO API KEY");
       return authResponse;
     } on DioException catch (e) {
       final message = e.response?.data is Map
