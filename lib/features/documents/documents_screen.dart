@@ -65,7 +65,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         );
 
         // После закрытия экрана удаляем временный файл
-        await _documentService.deleteTemporaryFile(filePath);
+        // await _documentService.deleteTemporaryFile(filePath);
       }
     } on DocumentException catch (e) {
       // Обработка ошибок от сервиса
@@ -311,7 +311,7 @@ class _DocumentsScreenDynamicState extends State<DocumentsScreenDynamic> {
           ),
         );
 
-        await _documentService.deleteTemporaryFile(filePath);
+        // await _documentService.deleteTemporaryFile(filePath);
       }
     } on DocumentException catch (e) {
       setState(() => _isLoadingDocument = false);

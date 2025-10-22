@@ -29,6 +29,7 @@
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	
+
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
@@ -50,7 +51,10 @@
 	<true/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Приложению нужен доступ к вашим фотографиям, чтобы вы могли выбирать изображения из галереи.</string>
-
+<key>NSDocumentsFolderUsageDescription</key>
+<string>Для чтения и записи файлов на устройстве</string>
+<key>NSAppleMusicUsageDescription</key>
+<string>Для доступа к медиафайлам</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Приложению нужен доступ к камере, чтобы делать фотографии и сканировать документы.</string>
 

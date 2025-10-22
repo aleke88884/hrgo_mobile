@@ -70,23 +70,27 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                 totalPages = pages;
                 isReady = true;
               });
+              print('✅ PDF rendered with $pages pages');
             },
             onError: (error) {
               setState(() {
                 errorMessage = error.toString();
+                isReady = false;
               });
-              print('❌ Ошибка PDF: $error');
+              print('❌ PDF rendering error: $error');
             },
             onPageError: (page, error) {
               setState(() {
-                errorMessage = 'Ошибка на странице $page: $error';
+                errorMessage = 'Error on page $page: $error';
+                isReady = false;
               });
-              print('❌ Ошибка страницы $page: $error');
+              print('❌ Page $page error: $error');
             },
             onPageChanged: (page, total) {
               setState(() {
                 currentPage = page ?? 0;
               });
+              print('📄 Page changed to ${currentPage + 1}/$total');
             },
           ),
 

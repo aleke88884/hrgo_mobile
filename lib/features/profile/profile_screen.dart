@@ -5,6 +5,7 @@ import 'package:hrgo_app/features/hr_document/hr_document_screen.dart';
 import 'package:hrgo_app/features/leave/leave_screen.dart';
 import 'package:hrgo_app/features/login/login_screen.dart';
 import 'package:hrgo_app/features/shift_schedule/shift_schedule_screen.dart';
+import 'package:hrgo_app/features/sick_leave/sick_leave_screen.dart';
 import 'package:hrgo_app/features/termination/termination_screen.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -155,12 +156,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (BuildContext context) {
-                        return LeaveScreen();
+                        return SickLeaveScreen();
                       },
                     ),
                   );
                 },
-                child: _buildMenuItem(context, 'Отпуск больничный'),
+                child: _buildMenuItem(context, 'Больничный лист'),
               ),
               const SizedBox(height: 12),
               InkWell(

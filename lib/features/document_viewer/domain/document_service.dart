@@ -114,13 +114,18 @@ class DocumentService {
   /// Сохранение PDF во временную директорию
   Future<String> _savePdfToFile(Uint8List bytes, String fileName) async {
     try {
-      final dir = await getTemporaryDirectory();
+      final dir = await getApplicationDocumentsDirectory();
       final path = '${dir.path}/$fileName';
       final file = File(path);
       await file.writeAsBytes(bytes);
-      return path;
+      if (await file.exists()) {
+        print('✅ File exists at: $path, size: ${await file.length()} bytes');
+        return path;
+      } else {
+        throw DocumentException('File was not created at: $path');
+      }
     } catch (e) {
-      throw DocumentException('Ошибка сохранения файла: $e');
+      throw DocumentException('Error saving file: $e');
     }
   }
 

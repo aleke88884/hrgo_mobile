@@ -4,6 +4,7 @@ import 'package:hrgo_app/features/documents/documents_screen.dart';
 import 'package:hrgo_app/features/leave/leave_screen.dart';
 import 'package:hrgo_app/features/profile/profile_screen.dart';
 import 'package:hrgo_app/features/sick_leave/sick_leave_screen.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class BottomMainNavigationScreen extends StatefulWidget {
   const BottomMainNavigationScreen({super.key});
@@ -73,11 +74,11 @@ class _BottomMainNavigationScreenState
               label: 'Отпуск',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.chat_bubble_outline),
+              icon: Icon(LucideIcons.plane),
               label: 'Команд-ки',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.share_outlined),
+              icon: Icon(LucideIcons.heartPulse),
               label: 'Больничный',
             ),
           ],
