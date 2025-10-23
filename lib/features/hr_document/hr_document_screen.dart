@@ -110,7 +110,9 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
     }
   }
 
+  // In _HRDocumentsScreenState
   Future<void> _signSingleDocument(DocumentItem document) async {
+    // Only show loading indicator for the API call phase
     setState(() {
       _isSigning = true;
     });
@@ -122,23 +124,43 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
       );
       print('✅ Документ ${document.title}. Ссылка: $vlink');
 
-      if (mounted) {
-        setState(() {
-          _signedDocuments.add(document.id);
-        });
+      // Hide API loading indicator, the webview will now open
+      setState(() {
+        _isSigning = false;
+      });
 
-        Navigator.push(
+      if (mounted) {
+        // 1. AWAIT the result from the webview screen
+        final signingSuccessful = await Navigator.push(
           context,
-          MaterialPageRoute(
+          MaterialPageRoute<bool>(
+            // Specify return type
             builder: (context) => DocumentSigningWebView(url: vlink),
           ),
         );
+
+        // 2. ONLY update the state if the webview returned a success signal (e.g., true)
+        if (signingSuccessful == true) {
+          if (mounted) {
+            setState(() {
+              _signedDocuments.add(document.id);
+            });
+            // Re-fetch documents to ensure they reflect the true status from the backend
+            // This is safer than just relying on local state
+            await _loadDocuments();
+            _showErrorSnackbar('Документ успешно подписан!');
+          }
+        } else {
+          // User likely cancelled or signing failed in the webview
+          _showErrorSnackbar('Подписание отменено или не завершено.');
+        }
       }
     } on DocumentException catch (e) {
       _showErrorSnackbar(e.message);
     } catch (e) {
       _showErrorSnackbar('Ошибка при подписании: $e');
     } finally {
+      // Ensure signing indicator is false at the very end
       setState(() => _isSigning = false);
     }
   }

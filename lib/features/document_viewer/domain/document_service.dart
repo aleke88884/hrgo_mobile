@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
@@ -23,49 +24,67 @@ class DocumentService {
   }
   // В DocumentService
 
+  // This method belongs in your DocumentService class
+
   Future<String> signDocument({
     required String documentId,
     required String documentModel,
   }) async {
     try {
+      // Assuming _storage and Constants are accessible in this class
       final apiKey = await _storage.readData(Constants.apikeyStorageKey);
       final userLogin = await _storage.readData(Constants.userLogin);
       final userPassword = await _storage.readData(Constants.userPassword);
 
-      final fullUrl =
-          'http://api-dev.hrgo.kz$_signEndpoint?model=$documentModel&Id=$documentId';
+      final fullUrl = 'http://api-dev.hrgo.kz$_signEndpoint';
 
       print('✍️ Запрос подписи: $fullUrl');
 
-      final response = await _dio.post(
+      // Assuming _dio is a Dio instance accessible in this class
+      final response = await _dio.get(
+        queryParameters: {'model': documentModel, 'Id': documentId},
         fullUrl,
         options: Options(
+          followRedirects: true,
           headers: {
             'login': userLogin,
             'password': userPassword,
             'api-key': apiKey,
           },
-          validateStatus: (status) => status != null && status < 500,
         ),
       );
 
-      if (response.statusCode == 200 && response.data is Map) {
-        final data = response.data as Map<String, dynamic>;
-        final vlink = data['vlink'] as String?;
-        if (vlink == null) {
-          throw DocumentException('Не удалось получить ссылку на подписание');
+      if (response.statusCode == 200) {
+        var data = response.data;
+        if (data is String) {
+          try {
+            data = jsonDecode(data);
+          } catch (e) {
+            throw DocumentException('Ошибка парсинга JSON: $e');
+          }
         }
-        print('✅ Ссылка для подписания: $vlink');
-        return vlink;
+
+        final vlink = data['vlink'];
+        print('VLINKKKKK $vlink');
+        if (vlink is String && vlink.isNotEmpty) {
+          print('✅ Ссылка для подписания: $vlink');
+          return vlink;
+        } else {
+          throw DocumentException(
+            'Не удалось получить ссылку на подписание. API вернул недействительный "vlink".',
+          );
+        }
       } else {
+        // Include response data in error for better debugging
+        final responseBody = response.data?.toString() ?? 'Нет данных в ответе';
         throw DocumentException(
-          'Ошибка при подписании: ${response.statusCode}',
+          'Ошибка при подписании: ${response.statusCode}. Ответ: $responseBody',
         );
       }
     } on DioException catch (e) {
       throw DocumentException('Ошибка сети при подписании: ${e.message}');
     } catch (e) {
-      throw DocumentException('Ошибка подписи: $e');
+      throw DocumentException('Неизвестная ошибка подписи: ${e.toString()}');
     }
   }
 

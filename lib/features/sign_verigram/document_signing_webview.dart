@@ -25,7 +25,6 @@ class _DocumentSigningWebViewState extends State<DocumentSigningWebView> {
             setState(() => _isLoading = false);
           },
           onNavigationRequest: (request) {
-            // Если сервер перенаправит на success/finish — можно закрыть экран
             if (request.url.contains('success') ||
                 request.url.contains('complete')) {
               Navigator.pop(context, true);
@@ -42,7 +41,10 @@ class _DocumentSigningWebViewState extends State<DocumentSigningWebView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Подписание документа'),
+        title: const Text(
+          'Подписание документа',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color(0xFF3F51B5),
       ),
       body: Stack(
