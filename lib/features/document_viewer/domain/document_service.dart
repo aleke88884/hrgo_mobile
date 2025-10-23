@@ -10,7 +10,7 @@ class DocumentService {
   final SecureStorageService _storage = SecureStorageService();
 
   static const String _endpoint = '/read_document';
-
+  static const String _signEndpoint = '/sign_document';
   DocumentService({Dio? dio}) : _dio = dio ?? Dio() {
     _dio.interceptors.add(
       LogInterceptor(
@@ -20,6 +20,53 @@ class DocumentService {
         error: true,
       ),
     );
+  }
+  // В DocumentService
+
+  Future<String> signDocument({
+    required String documentId,
+    required String documentModel,
+  }) async {
+    try {
+      final apiKey = await _storage.readData(Constants.apikeyStorageKey);
+      final userLogin = await _storage.readData(Constants.userLogin);
+      final userPassword = await _storage.readData(Constants.userPassword);
+
+      final fullUrl =
+          'http://api-dev.hrgo.kz$_signEndpoint?model=$documentModel&Id=$documentId';
+
+      print('✍️ Запрос подписи: $fullUrl');
+
+      final response = await _dio.post(
+        fullUrl,
+        options: Options(
+          headers: {
+            'login': userLogin,
+            'password': userPassword,
+            'api-key': apiKey,
+          },
+          validateStatus: (status) => status != null && status < 500,
+        ),
+      );
+
+      if (response.statusCode == 200 && response.data is Map) {
+        final data = response.data as Map<String, dynamic>;
+        final vlink = data['vlink'] as String?;
+        if (vlink == null) {
+          throw DocumentException('Не удалось получить ссылку на подписание');
+        }
+        print('✅ Ссылка для подписания: $vlink');
+        return vlink;
+      } else {
+        throw DocumentException(
+          'Ошибка при подписании: ${response.statusCode}',
+        );
+      }
+    } on DioException catch (e) {
+      throw DocumentException('Ошибка сети при подписании: ${e.message}');
+    } catch (e) {
+      throw DocumentException('Ошибка подписи: $e');
+    }
   }
 
   /// Получение PDF-документа
