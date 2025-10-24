@@ -23,14 +23,14 @@ class EmployeeDocumentsService {
   }
 
   /// Получение списка документов сотрудника
-  Future<EmployeeDocumentsResponse> getEmployeeDocuments({
-    required int employeeId,
-  }) async {
+  Future<EmployeeDocumentsResponse> getEmployeeDocuments() async {
     try {
       final apiKey = await _storage.readData(Constants.apikeyStorageKey);
       final userLogin = await _storage.readData(Constants.userLogin);
       final userPassword = await _storage.readData(Constants.userPassword);
-
+      final employeeId = await _storage.readData(
+        Constants.employeeIdStorageKey,
+      );
       final fullUrl =
           '$_baseUrl$_endpoint'
           '?model=hr.employee'
@@ -277,7 +277,7 @@ class DocumentItem {
   /// Иконка в зависимости от типа документа
   String get icon {
     if (model.contains('contract')) return '📄';
-    if (model.contains('leave')) return '🏖️';
+    if (model.contains('leave')) return '📄';
     return '📋';
   }
 }

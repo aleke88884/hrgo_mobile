@@ -109,3 +109,45 @@ class AuthException implements Exception {
   @override
   String toString() => message;
 }
+
+extension AuthSession on AuthApiService {
+  /// Проверяет, есть ли активная сессия
+  Future<bool> checkSession() async {
+    try {
+      final apiKey = await _storage.readData(Constants.apikeyStorageKey);
+      final login = await _storage.readData(Constants.userLogin);
+      final password = await _storage.readData(Constants.userPassword);
+      final domain = await _storage.readData(Constants.domainStorageKey);
+
+      if (apiKey == null ||
+          login == null ||
+          password == null ||
+          domain == null) {
+        return false; // нет сохранённых данных
+      }
+
+      // Проверим валидность токена (необязательно, но лучше)
+      final url =
+          'http://$domain/send_request?model=res.users&fields=id&limit=1';
+      final response = await _dio.get(
+        url,
+        options: Options(
+          headers: {'login': login, 'password': password, 'api-key': apiKey},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return true; // сессия активна
+      } else {
+        return false;
+      }
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Выход из системы
+  Future<void> logout() async {
+    await _storage.deleteAll(); // очистить все сохранённые данные
+  }
+}

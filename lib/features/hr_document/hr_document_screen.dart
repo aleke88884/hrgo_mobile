@@ -53,10 +53,7 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
     });
 
     try {
-      final employeeId = widget.employeeId ?? 24;
-      final response = await _employeeDocumentsService.getEmployeeDocuments(
-        employeeId: employeeId,
-      );
+      final response = await _employeeDocumentsService.getEmployeeDocuments();
 
       setState(() {
         _documents = response.getAllDocuments();
@@ -300,7 +297,7 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
         CircleAvatar(
           radius: 35,
           backgroundImage: widget.avatarPath != null
-              ? AssetImage(widget.avatarPath!)
+              ? NetworkImage(widget.avatarPath!)
               : null,
           backgroundColor: const Color(0xFFE0E0E0),
           child: widget.avatarPath == null

@@ -41,12 +41,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     });
 
     try {
-      // Используем переданный ID или ID текущего пользователя (например, 24)
-      final employeeId = widget.employeeId ?? 24;
-
-      final response = await _employeeDocumentsService.getEmployeeDocuments(
-        employeeId: employeeId,
-      );
+      final response = await _employeeDocumentsService.getEmployeeDocuments();
 
       setState(() {
         _documents = response.getAllDocuments();

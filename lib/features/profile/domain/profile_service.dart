@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:hrgo_app/common/constants.dart';
 import 'package:hrgo_app/core/secure_storage/secure_storage_service.dart';
 import 'package:http/http.dart' as http;
@@ -9,9 +8,15 @@ class ProfileService {
   final SecureStorageService secureStorageService = SecureStorageService();
 
   /// Получение профиля сотрудника по ID
-  Future<ProfileModel> getEmployeeProfile(int employeeId) async {
+  Future<ProfileModel> getEmployeeProfile() async {
     try {
-      // 1️⃣ Формируем URL
+      final employeeId = await secureStorageService.readData(
+        Constants.employeeIdStorageKey,
+      );
+      if (employeeId == null || employeeId.isEmpty) {
+        throw Exception('Employee ID not found.');
+      }
+
       final url = Uri.parse(
         '$baseUrl/send_request?model=hr.employee&fields=name,email,department_id,job_id,image_1920&Id=$employeeId',
       );
@@ -28,7 +33,6 @@ class ProfileService {
         throw Exception('API key is missing. Please re-login.');
       }
 
-      // 3️⃣ Отправляем GET-запрос
       final response = await http
           .get(
             url,
@@ -48,7 +52,6 @@ class ProfileService {
             },
           );
 
-      // 4️⃣ Обрабатываем ответ
       final decodedBody = utf8.decode(response.bodyBytes);
       final Map<String, dynamic> data = json.decode(decodedBody);
 
@@ -129,17 +132,17 @@ class ProfileModel {
   final int id;
   final String name;
   final String email;
-  final List<dynamic> departmentId;
-  final List<dynamic> jobId;
-  final String? image1920;
+  final DepartmentModel? department;
+  final JobModel? job;
+  final String? imageUrl;
 
   const ProfileModel({
     required this.id,
     required this.name,
     required this.email,
-    required this.departmentId,
-    required this.jobId,
-    this.image1920,
+    this.department,
+    this.job,
+    this.imageUrl,
   });
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
@@ -147,11 +150,13 @@ class ProfileModel {
       id: json['id'] is int ? json['id'] : int.tryParse('${json['id']}') ?? 0,
       name: json['name']?.toString() ?? '',
       email: json['email']?.toString() ?? '',
-      departmentId: json['department_id'] is List
-          ? List<dynamic>.from(json['department_id'])
-          : [],
-      jobId: json['job_id'] is List ? List<dynamic>.from(json['job_id']) : [],
-      image1920: json['image_1920']?.toString(),
+      department: json['department_id'] is Map<String, dynamic>
+          ? DepartmentModel.fromJson(json['department_id'])
+          : null,
+      job: json['job_id'] is Map<String, dynamic>
+          ? JobModel.fromJson(json['job_id'])
+          : null,
+      imageUrl: json['image_1920']?.toString(),
     );
   }
 
@@ -159,35 +164,59 @@ class ProfileModel {
     'id': id,
     'name': name,
     'email': email,
-    'department_id': departmentId,
-    'job_id': jobId,
-    'image_1920': image1920,
+    'department_id': department?.toJson(),
+    'job_id': job?.toJson(),
+    'image_1920': imageUrl,
   };
 
   /// Название отдела
-  String get departmentName =>
-      departmentId.length > 1 ? departmentId[1].toString() : '';
+  String get departmentName => department?.name ?? '';
 
   /// Название должности
-  String get jobTitle => jobId.length > 1 ? jobId[1].toString() : '';
+  String get jobTitle => job?.name ?? '';
 
-  /// 🔥 Получаем байты изображения из Base64
-  Uint8List? get imageBytes {
-    if (image1920 == null || image1920!.isEmpty) return null;
+  /// ✅ Возвращает ссылку для Image.network()
+  String? get imageNetworkUrl {
+    if (imageUrl == null || imageUrl!.isEmpty) return null;
+    if (imageUrl!.startsWith('http')) return imageUrl;
+    return 'http://api-dev.hrgo.kz$imageUrl';
+  }
+}
 
-    try {
-      // иногда Odoo возвращает base64 с переносами строк
-      final cleaned = image1920!.replaceAll(RegExp(r'\s+'), '');
-      return base64Decode(cleaned);
-    } catch (e) {
-      print('Ошибка при декодировании изображения: $e');
-      return null;
-    }
+/// Модель отдела
+class DepartmentModel {
+  final int id;
+  final String name;
+  final String? model;
+
+  DepartmentModel({required this.id, required this.name, this.model});
+
+  factory DepartmentModel.fromJson(Map<String, dynamic> json) {
+    return DepartmentModel(
+      id: json['id'] is int ? json['id'] : int.tryParse('${json['id']}') ?? 0,
+      name: json['name']?.toString() ?? '',
+      model: json['model']?.toString(),
+    );
   }
 
-  /// 💡 Альтернатива — data URI (если хочешь через Image.network)
-  String? get imageUri {
-    if (image1920 == null || image1920!.isEmpty) return null;
-    return 'data:image/jpeg;base64,$image1920';
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'model': model};
+}
+
+/// Модель должности
+class JobModel {
+  final int id;
+  final String name;
+  final String? model;
+
+  JobModel({required this.id, required this.name, this.model});
+
+  factory JobModel.fromJson(Map<String, dynamic> json) {
+    return JobModel(
+      id: json['id'] is int ? json['id'] : int.tryParse('${json['id']}') ?? 0,
+      name: json['name']?.toString() ?? '',
+      model: json['model']?.toString(),
+    );
   }
+
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'model': model};
 }
