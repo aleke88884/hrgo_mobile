@@ -4,6 +4,7 @@ import 'package:hrgo_app/features/document_viewer/document_viewer_screen.dart';
 import 'package:hrgo_app/features/document_viewer/domain/document_service.dart';
 
 import 'package:hrgo_app/features/documents/employee_documents_service.dart';
+import 'package:hrgo_app/features/sign_verigram/document_signing_webview.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 /// Экран со списком документов сотрудника (без проверки)
@@ -94,6 +95,51 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         _showErrorSnackbar('Ошибка открытия документа: $e');
       }
     }
+  }
+
+  Future<void> _onSignDocument(DocumentItem document) async {
+    setState(() => _isLoadingDocument = true);
+
+    try {
+      final vlink = await _documentService.signDocument(
+        documentModel: document.model,
+        documentId: '${document.id}',
+      );
+
+      setState(() => _isLoadingDocument = false);
+
+      if (mounted) {
+        final success = await Navigator.push<bool>(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DocumentSigningWebView(url: vlink),
+          ),
+        );
+
+        if (success == true) {
+          _showSnackbar('Документ успешно подписан!');
+          await _loadDocuments(); // обновим список
+        } else {
+          _showSnackbar('Подписание отменено или не завершено.');
+        }
+      }
+    } on DocumentException catch (e) {
+      _showErrorSnackbar(e.message);
+    } catch (e) {
+      _showErrorSnackbar('Ошибка при подписании: $e');
+    } finally {
+      setState(() => _isLoadingDocument = false);
+    }
+  }
+
+  void _showSnackbar(String message, {bool error = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: error ? Colors.red : Colors.green,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   void _showErrorSnackbar(String message) {
@@ -279,47 +325,131 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 
   Widget _buildDocumentTile(DocumentItem document) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      leading: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: _getDocumentColor(document.model).withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Center(
-          child: Text(document.icon, style: const TextStyle(fontSize: 24)),
-        ),
-      ),
-      title: Text(
-        document.title,
-        style: const TextStyle(
-          color: Color(0xFF3D3D7E),
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 4),
-          Text(
-            document.name,
-            style: const TextStyle(color: Color(0xFF8E8E93), fontSize: 14),
+    final bool canSign = document.state == 'under_approval_employee';
+    final bool isApproved = document.state == 'approved';
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
-          if (document.state != null) ...[
-            const SizedBox(height: 4),
-            _buildStatusChip(document.state!),
-          ],
         ],
       ),
-      trailing: const Icon(
-        Icons.arrow_forward_ios,
-        color: Color(0xFF3D3D7E),
-        size: 16,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: _getDocumentColor(document.model).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    document.icon,
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                ),
+              ),
+              title: Text(
+                document.title,
+                style: const TextStyle(
+                  color: Color(0xFF3D3D7E),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      document.name,
+                      style: const TextStyle(
+                        color: Color(0xFF8E8E93),
+                        fontSize: 14,
+                        height: 1.3,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    if (document.state != null)
+                      _buildStatusChip(document.state!),
+                  ],
+                ),
+              ),
+              trailing: const Icon(
+                Icons.arrow_forward_ios,
+                color: Color(0xFF3D3D7E),
+                size: 16,
+              ),
+              onTap: () => _onDocumentTap(document),
+            ),
+
+            // Разделитель между информацией и действиями
+            const Divider(height: 16, thickness: 1, color: Color(0xFFE5E5EA)),
+
+            // Действия под документом (с кнопкой или статусом)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (canSign)
+                  ElevatedButton.icon(
+                    onPressed: _isLoadingDocument
+                        ? null
+                        : () async => await _onSignDocument(document),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.lightGreen.shade600,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      elevation: 0,
+                    ),
+                    icon: const Icon(Icons.edit_document, size: 18),
+                    label: const Text(
+                      'Подписать',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  )
+                else if (isApproved)
+                  const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.verified, color: Colors.green, size: 18),
+                      SizedBox(width: 6),
+                      Text(
+                        'Документ утверждён',
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  const SizedBox(height: 36), // чтобы выровнять высоту карточек
+              ],
+            ),
+          ],
+        ),
       ),
-      onTap: () => _onDocumentTap(document),
     );
   }
 

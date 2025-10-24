@@ -37,7 +37,6 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
   String? _errorMessage;
 
   List<DocumentItem> _documents = [];
-  final Set<int> _viewedDocuments = {};
   final Set<int> _signedDocuments = {};
 
   @override
@@ -54,12 +53,10 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
 
     try {
       final response = await _employeeDocumentsService.getEmployeeDocuments();
-
       setState(() {
         _documents = response.getAllDocuments();
         _isLoadingList = false;
       });
-
       print('✅ Загружено документов: ${_documents.length}');
     } on DocumentsException catch (e) {
       setState(() {
@@ -93,10 +90,6 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
                 DocumentViewerScreen(filePath: filePath, title: document.title),
           ),
         );
-
-        setState(() {
-          _viewedDocuments.add(document.id);
-        });
       }
     } on DocumentException catch (e) {
       setState(() => _isLoadingDocument = false);
@@ -107,49 +100,35 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
     }
   }
 
-  // In _HRDocumentsScreenState
-  Future<void> _signSingleDocument(DocumentItem document) async {
-    // Only show loading indicator for the API call phase
-    setState(() {
-      _isSigning = true;
-    });
+  Future<void> _signDocument(DocumentItem document) async {
+    setState(() => _isSigning = true);
 
     try {
       final vlink = await _documentService.signDocument(
         documentModel: document.model,
         documentId: '${document.id}',
       );
+
       print('✅ Документ ${document.title}. Ссылка: $vlink');
 
-      // Hide API loading indicator, the webview will now open
-      setState(() {
-        _isSigning = false;
-      });
+      setState(() => _isSigning = false);
 
       if (mounted) {
-        // 1. AWAIT the result from the webview screen
-        final signingSuccessful = await Navigator.push(
+        final success = await Navigator.push<bool>(
           context,
-          MaterialPageRoute<bool>(
-            // Specify return type
+          MaterialPageRoute(
             builder: (context) => DocumentSigningWebView(url: vlink),
           ),
         );
 
-        // 2. ONLY update the state if the webview returned a success signal (e.g., true)
-        if (signingSuccessful == true) {
-          if (mounted) {
-            setState(() {
-              _signedDocuments.add(document.id);
-            });
-            // Re-fetch documents to ensure they reflect the true status from the backend
-            // This is safer than just relying on local state
-            await _loadDocuments();
-            _showErrorSnackbar('Документ успешно подписан!');
-          }
+        if (success == true) {
+          setState(() {
+            _signedDocuments.add(document.id);
+          });
+          await _loadDocuments();
+          _showSnackbar('Документ успешно подписан!');
         } else {
-          // User likely cancelled or signing failed in the webview
-          _showErrorSnackbar('Подписание отменено или не завершено.');
+          _showSnackbar('Подписание отменено или не завершено.');
         }
       }
     } on DocumentException catch (e) {
@@ -157,21 +136,23 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
     } catch (e) {
       _showErrorSnackbar('Ошибка при подписании: $e');
     } finally {
-      // Ensure signing indicator is false at the very end
       setState(() => _isSigning = false);
     }
   }
 
-  void _showErrorSnackbar(String message) {
+  void _showSnackbar(String message, {bool error = false}) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red,
+        backgroundColor: error ? Colors.red : Colors.green,
         behavior: SnackBarBehavior.floating,
       ),
     );
   }
+
+  void _showErrorSnackbar(String message) =>
+      _showSnackbar(message, error: true);
 
   @override
   Widget build(BuildContext context) {
@@ -205,11 +186,12 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
       ),
       body: Stack(
         children: [
-          _isLoadingList
-              ? _buildLoadingState()
-              : _errorMessage != null
-              ? _buildErrorState()
-              : _buildContent(),
+          if (_isLoadingList)
+            _buildLoadingState()
+          else if (_errorMessage != null)
+            _buildErrorState()
+          else
+            _buildContent(),
           if (_isLoadingDocument || _isSigning) _buildLoadingOverlay(),
         ],
       ),
@@ -266,13 +248,13 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
           _buildEmployeeInfoCard(),
           const SizedBox(height: 24),
           const Text(
-            'Просмотрите и подпишите документы по отдельности. '
-            'После просмотра появится кнопка для подписи.',
+            'Просмотрите и подпишите нужные документы. '
+            'Подписанные документы отмечены галочкой.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 16, color: Color(0xFF424242)),
           ),
           const SizedBox(height: 24),
-          ..._documents.map(_buildDocumentItem).toList(),
+          ..._documents.map(_buildDocumentItem),
           const SizedBox(height: 40),
         ],
       ),
@@ -331,21 +313,20 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
   );
 
   Widget _buildDocumentItem(DocumentItem doc) {
-    final viewed = _viewedDocuments.contains(doc.id);
     final signed = _signedDocuments.contains(doc.id);
+    final isApproved =
+        (doc.state?.toLowerCase() == 'approved'); // ✅ проверяем статус
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: signed ? Colors.green.withOpacity(0.1) : Colors.white,
+        color: signed || isApproved
+            ? Colors.green.withOpacity(0.1)
+            : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: signed
-              ? Colors.green
-              : viewed
-              ? Colors.blueAccent.withOpacity(0.3)
-              : Colors.transparent,
+          color: signed || isApproved ? Colors.green : Colors.transparent,
           width: 2,
         ),
         boxShadow: [
@@ -359,26 +340,38 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                doc.title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF212121),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                doc.name,
-                style: const TextStyle(fontSize: 13, color: Color(0xFF9E9E9E)),
-              ),
-            ],
+          Text(
+            doc.title,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Color(0xFF212121),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            doc.name,
+            style: const TextStyle(fontSize: 13, color: Color(0xFF9E9E9E)),
           ),
           const SizedBox(height: 12),
-          if (!signed)
+          if (signed || isApproved)
+            Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.verified, color: Colors.green, size: 28),
+                  SizedBox(width: 8),
+                  Text(
+                    'Документ утверждён',
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -409,26 +402,25 @@ class _HRDocumentsScreenState extends State<HRDocumentsScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: viewed ? () => _signSingleDocument(doc) : null,
+                    onPressed: isApproved
+                        ? null // ❌ нельзя нажать
+                        : () => _signDocument(doc),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: viewed
-                          ? Colors.lightGreen.shade400
-                          : Colors.grey.shade400,
+                      backgroundColor: isApproved
+                          ? Colors
+                                .grey // 🔒 заблокированная кнопка
+                          : Colors.lightGreen.shade400,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    child: const Text(
-                      'Подписать',
-                      style: TextStyle(color: Colors.white),
+                    child: Text(
+                      isApproved ? 'Утверждено' : 'Подписать',
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
               ],
-            )
-          else
-            const Center(
-              child: Icon(Icons.verified, color: Colors.green, size: 28),
             ),
         ],
       ),
