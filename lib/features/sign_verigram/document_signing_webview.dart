@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class DocumentSigningWebView extends StatefulWidget {
   final String url;
@@ -12,30 +12,7 @@ class DocumentSigningWebView extends StatefulWidget {
 
 class _DocumentSigningWebViewState extends State<DocumentSigningWebView> {
   bool _isLoading = true;
-  late final WebViewController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageFinished: (_) {
-            setState(() => _isLoading = false);
-          },
-          onNavigationRequest: (request) {
-            if (request.url.contains('success') ||
-                request.url.contains('complete')) {
-              Navigator.pop(context, true);
-              return NavigationDecision.prevent;
-            }
-            return NavigationDecision.navigate;
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse(widget.url));
-  }
+  late InAppWebViewController _webViewController;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +26,31 @@ class _DocumentSigningWebViewState extends State<DocumentSigningWebView> {
       ),
       body: Stack(
         children: [
-          WebViewWidget(controller: _controller),
+          InAppWebView(
+            initialUrlRequest: URLRequest(url: WebUri(widget.url)),
+            initialSettings: InAppWebViewSettings(
+              javaScriptEnabled: true,
+              mediaPlaybackRequiresUserGesture: false,
+              allowsInlineMediaPlayback: true,
+            ),
+            onWebViewCreated: (controller) {
+              _webViewController = controller;
+            },
+            onLoadStop: (controller, url) {
+              setState(() => _isLoading = false);
+              if (url != null &&
+                  (url.toString().contains('success') ||
+                      url.toString().contains('complete'))) {
+                Navigator.pop(context, true);
+              }
+            },
+            onPermissionRequest: (controller, request) async {
+              return PermissionResponse(
+                resources: request.resources,
+                action: PermissionResponseAction.GRANT,
+              );
+            },
+          ),
           if (_isLoading) const Center(child: CircularProgressIndicator()),
         ],
       ),

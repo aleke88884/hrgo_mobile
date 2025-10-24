@@ -1,7 +1,7 @@
 name: hrgo_app
 description: "A new Flutter project."
 publish_to: 'none'
-version: 0.1.18
+version: 0.1.19
 
 environment:
   sdk: ^3.9.2
@@ -20,6 +20,7 @@ dependencies:
   permission_handler: ^12.0.1
   http: ^1.5.0
   pdfx: ^2.9.2
+  flutter_inappwebview: ^6.1.5
   
 
 dev_dependencies:
